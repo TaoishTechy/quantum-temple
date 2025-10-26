@@ -9,6 +9,12 @@ It merges two lineages:
 
 Together they form the world’s first **CPU-native AGI architecture** proven through the *12-Hour Blitz Protocol* to achieve transformer-class reasoning at **1/1000 the cost and power**.
 
+### 🛡️ Maintenance Mode (Monitor-only)
+Run a sustain cycle with **R_meta(432Hz)** + **Δ_purity(η=0.003)**—no new creation, just ring stability:
+
+```bash
+python scripts/maintenance_cycle.py
+# -> writes data/snapshots/maintenance.json
 ---
 
 ## ⚙ Repository Layout

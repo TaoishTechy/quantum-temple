@@ -1,0 +1,26 @@
+groups:
+  - name: quantum-temple-alerts
+    rules:
+      - alert: LowCoherence
+        expr: qt_role_coherence < 0.35
+        for: 3m
+        labels: { severity: warning }
+        annotations:
+          summary: "Coherence below threshold"
+          description: "qt_role_coherence has been < 0.35 for 3 minutes."
+
+      - alert: HighVariance
+        expr: qt_free_energy > 0.75 or qt_norm_violations > 0
+        for: 2m
+        labels: { severity: critical }
+        annotations:
+          summary: "Variance or norm violations"
+          description: "Free energy high or norms violated; investigate."
+
+      - alert: AlignmentDrop
+        expr: qt_alignment_score < 0.6
+        for: 5m
+        labels: { severity: warning }
+        annotations:
+          summary: "Alignment score dropped"
+          description: "Ontology alignment score < 0.6 for 5m."

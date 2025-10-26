@@ -1,0 +1,59 @@
+name: CI
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch: {}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      PYTHONHASHSEED: "0"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt || true
+          pip install numpy scipy pytest fastapi uvicorn prometheus_client
+          pip install ruff
+      - name: Lint (ruff)
+        run: ruff check src tests
+      - name: Run tests
+        run: pytest -q
+      - name: Run quick benchmark (smoke)
+        run: |
+          mkdir -p data/output_logs
+          ./orchestrator/run_blitz_test.sh --dry-run || true
+      - name: Upload logs (artifact)
+        uses: actions/upload-artifact@v4
+        with:
+          name: output_logs
+          path: data/output_logs
+
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: gitleaks/gitleaks-action@v2
+        with:
+          args: detect --no-git -v
+
+  release-on-tag:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build benchmark bundle
+        run: |
+          python orchestrator/run_benchmark.py || true
+          tar -czf benchmark_bundle.tgz data/benchmarks || true
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: benchmark_bundle.tgz

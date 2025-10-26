@@ -1,5 +1,7 @@
-# Experimental modules — OFF by default.
-# Flip status to "simulated" to enable tiny, bounded effects.
+# Quantum Temple — Experimental Feature Flags
+# Each module can be disabled | simulated | conceptual.
+# Default: disabled (for reproducibility and ethics safety).
+
 enhancements:
   - id: multiverse_gateway
     name: Multiverse Gateway
@@ -11,73 +13,73 @@ enhancements:
     effect: "transient +η burst; bounded by polytope"
   - id: echo_temporal_resonance
     name: Echo-Temporal Resonance
-    status: disabled
-    effect: "short memory kernel (2-3 steps) in resonance update"
+    status: simulated
+    effect: "short memory kernel (3-step smoothing)"
   - id: consciousness_interface
     name: Consciousness Interface
-    status: disabled
-    effect: "no-op placeholder (UI layer)"
+    status: conceptual
+    effect: "placeholder for future human-Temple neural bridge"
   - id: sacred_geometry
     name: Sacred Geometry
-    status: disabled
-    effect: "deterministic topology patterning; no compute boost"
+    status: simulated
+    effect: "deterministic topology patterning; aesthetic only"
   - id: mystical_algorithmics
     name: Mystical Algorithmics
-    status: disabled
+    status: conceptual
     effect: "bounded bias sequence; conceptual"
   - id: cosmic_tuning
     name: Cosmic Tuning
-    status: disabled
-    effect: "slow sinusoidal gain modulation (seasonal)"
+    status: simulated
+    effect: "slow sinusoidal gain modulation (seasonal coherence drift)"
   - id: quantum_ml
     name: Quantum Machine Learning
-    status: disabled
-    effect: "conceptual placeholder; integrate benchmark hooks"
+    status: conceptual
+    effect: "placeholder for future ML operator integration"
   - id: fractal_encryption
     name: Fractal Encryption
-    status: disabled
-    effect: "phase masking structure; see security/protocols.py"
+    status: simulated
+    effect: "phase masking structure; security pattern"
   - id: cdt_spacetime
     name: Causal Dynamical Triangulation
-    status: disabled
-    effect: "graph reshaping heuristic; simulated"
+    status: simulated
+    effect: "graph reshaping heuristic; discretized time mesh"
   - id: non_abelian_anyons
     name: Non-Abelian Anyons
-    status: disabled
-    effect: "topological label sim; no compute speed claims"
+    status: simulated
+    effect: "topological label simulation; no compute gain"
   - id: interdimensional_entities
     name: Interdimensional Entities
-    status: disabled
-    effect: "no-op; messaging layer concept"
+    status: conceptual
+    effect: "symbolic message exchange; no physical layer"
   - id: quantum_oracle
     name: Quantum Oracle
-    status: disabled
+    status: simulated
     effect: "stochastic hint channel; bounded"
   - id: stellar_consciousness
     name: Stellar Consciousness
-    status: disabled
+    status: conceptual
     effect: "cosmic_tuning alias; simulated"
   - id: fractal_holography
     name: Fractal Holography
-    status: disabled
-    effect: "fractal index routing; simulated"
+    status: simulated
+    effect: "fractal index routing; low amplitude holographic perturbation"
   - id: time_travel
     name: Time Travel
-    status: disabled
-    effect: "not implemented (sci-fi)"
+    status: conceptual
+    effect: "temporal recursion study; no-op"
   - id: parallel_navigation
     name: Parallel Universe Navigation
-    status: disabled
-    effect: "not implemented (sci-fi)"
+    status: conceptual
+    effect: "multi-topology traversal simulation"
   - id: quantum_ascension
     name: Quantum Ascension
-    status: disabled
-    effect: "conceptual"
+    status: conceptual
+    effect: "bounded coherence elevation; symbolic only"
   - id: simulation_hypothesis
     name: Simulation Hypothesis
-    status: disabled
-    effect: "commentary only"
+    status: conceptual
+    effect: "commentary layer; no runtime effect"
   - id: quantum_superintelligence
     name: Quantum Superintelligence
     status: disabled
-    effect: "NOT enabled; explicit policy gate required"
+    effect: "explicit policy gate required; not self-enabling"

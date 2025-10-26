@@ -1,39 +1,23 @@
-version: '3.8'
+version: "3.8"
 services:
   qudit-core:
     build:
       context: ..
       dockerfile: docker/core.Dockerfile
     environment:
-      NODE_ID: ${NODE_ID}
-      OPERATOR_SET: zeta,oracle,collatz
+      - NODE_ID=1
     volumes:
       - ../data:/var/data
-    networks:
-      - quantum-mesh
-
-  resonance-sync:
-    build:
-      context: ..
-      dockerfile: docker/sync.Dockerfile
-    depends_on: [qudit-core]
-    environment:
-      PLV_THRESHOLD: 0.90
-      ENTANGLEMENT_TARGET: 0.008
-    networks:
-      - quantum-mesh
+    networks: [quantum-mesh]
 
   metrics-collector:
     build:
       context: ..
-      dockerfile: docker/metrics.Dockerfile
-    ports:
-      - "8080:8080"
+    dockerfile: docker/metrics.Dockerfile
+    ports: ["8080:8080"]   # /health and /metrics
     volumes:
       - ../metrics:/data/metrics
-    networks:
-      - quantum-mesh
+    networks: [quantum-mesh]
 
 networks:
-  quantum-mesh:
-    driver: bridge
+  quantum-mesh: { driver: bridge }

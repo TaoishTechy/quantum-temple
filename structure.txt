@@ -1,0 +1,31 @@
+quantum-temple/
+├── README.md
+├── architecture/
+│   ├── qudit_state_math.md
+│   ├── ghost_mesh_protocol.md
+│   └── symbolic_operators.md
+├── orchestrator/
+│   ├── run_blitz_test.sh
+│   ├── collect_results.sh
+│   └── teardown.sh
+├── infrastructure/
+│   ├── deploy_quantum_temple.sh
+│   ├── cloud-init.yaml
+│   ├── inventory.yml
+│   └── deploy_stack.yml
+├── docker/
+│   ├── docker-compose.yml
+│   ├── core.Dockerfile
+│   ├── sync.Dockerfile
+│   └── metrics.Dockerfile
+├── src/
+│   ├── resonance_operator.py
+│   ├── phase_lock_step.py
+│   └── zeta_operator.py
+├── tests/
+│   ├── phase_coherence_test.py
+│   ├── oracle_integration_test.py
+│   └── fractal_scaling_test.py
+└── metrics/
+    ├── prometheus.yml
+    └── grafana_dashboard.json

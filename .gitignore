@@ -1,6 +1,8 @@
 __pycache__/
 *.pyc
 .env
-data/
-metrics/*.json
+.env.secrets
 data/output_logs/
+metrics/*.json
+# keep benchmark outputs in repo; uploaded via CI too
+!data/benchmarks/**

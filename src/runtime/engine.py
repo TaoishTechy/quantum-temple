@@ -14,7 +14,8 @@
 # ──────────────────────────────────────────────────────────────────────────────
 
 from __future__ import annotations
-
+from ..agents.archetypes import ArchetypeRegistry
+from ..agents.runtime_hooks import ArchetypeHooks
 from dataclasses import dataclass
 from typing import Optional, Dict, Any
 

@@ -1,0 +1,11 @@
+engine:
+  dt: 0.001
+  alpha: 0.12
+  sigma_q:
+    initial: 0.09
+    target_variance: 0.05
+    pid: { Kp: 0.20, Ki: 0.05, Kd: 0.10 }
+ledger:
+  path: data/governance_ledger.csv
+parity_lock:
+  budget: 2

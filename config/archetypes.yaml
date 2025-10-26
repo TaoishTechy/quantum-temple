@@ -1,0 +1,39 @@
+# Declarative mapping from "neurological archetypes" to agent configs.
+# Fill in your actual archetypes and traits here.
+archetypes:
+  Seer:
+    role: intuition
+    traits: [pattern_detection, anomaly_sense]
+    control:
+      sigma_q_target_variance: 0.04
+      parity_flip_budget: 1
+    operators: [zeta, oracle]
+  Strategist:
+    role: planning
+    traits: [multi_step_reasoning, constraint_satisfaction]
+    control:
+      sigma_q_target_variance: 0.05
+      parity_flip_budget: 2
+    operators: [oracle]
+  Mediator:
+    role: alignment
+    traits: [stability_bias, empathy_bias]
+    control:
+      sigma_q_target_variance: 0.06
+      parity_flip_budget: 0
+    operators: [zeta]
+  Artisan:
+    role: generative
+    traits: [creativity_bias, exploration_bias]
+    control:
+      sigma_q_target_variance: 0.07
+      parity_flip_budget: 3
+    operators: [collatz]
+
+binding:
+  # Bind logical node indices (or named groups) to archetypes
+  nodes:
+    "0-1": Seer
+    "2-3": Strategist
+    "4-5": Mediator
+    "6-7": Artisan

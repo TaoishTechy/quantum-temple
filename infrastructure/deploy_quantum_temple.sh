@@ -1,20 +1,25 @@
-#!/bin/bash
-set -e
-echo "Deploying Quantum Temple 12-Hour Blitz..."
-NODES=8
-INSTANCE_TYPE=cpx41
-DURATION=12h
-hcloud network create --name quantum-mesh --ip-range 10.42.0.0/16
-for i in $(seq 1 $NODES); do
-  hcloud server create --name qudit-node-$i \
-    --type $INSTANCE_TYPE \
-    --image ubuntu-22.04 \
-    --ssh-key ~/.ssh/quantum_temple.pub \
-    --network quantum-mesh \
-    --user-data-from-file cloud-init.yaml &
-done
-wait
-ansible-playbook -i inventory.yml deploy_stack.yml
-./orchestrator/run_blitz_test.sh
-sleep 43200
-./orchestrator/collect_results.sh && ./orchestrator/teardown.sh
+import numpy as np
+
+class PhaseEC:
+    """
+    Lightweight error correction for phase drift:
+    - Median filter on phases
+    - Outlier clamp
+    - Optional ring-wise re-centering
+    """
+    def __init__(self, k=3, clamp=np.pi/2):
+        self.k=k; self.clamp=clamp
+
+    def denoise(self, phases):
+        phased = np.asarray(phases, dtype=float)
+        # rolling median with padding
+        pad = self.k//2
+        ext = np.pad(phased, (pad,pad), mode="wrap")
+        out = np.empty_like(phased)
+        for i in range(len(phased)):
+            win = ext[i:i+self.k]
+            out[i] = np.median(win)
+        # clamp outliers
+        delta = out - phased
+        delta = np.clip(delta, -self.clamp, self.clamp)
+        return phased + delta

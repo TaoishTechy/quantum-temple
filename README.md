@@ -15,6 +15,8 @@ Run a sustain cycle with **R_meta(432Hz)** + **Δ_purity(η=0.003)**—no new cr
 ```bash
 python scripts/maintenance_cycle.py
 # -> writes data/snapshots/maintenance.json
+```
+
 ---
 
 ## ⚙ Repository Layout

@@ -1,70 +1,48 @@
 """
 FILE: quantum_temple_multiverse/multiverse/reality_registry.py
-PURPOSE: Manage realities, store states, serialize/deserialize
-MATHEMATICAL CORE: stores per-reality narrative params, physical state, conscious field structure
-INTEGRATION POINTS: multiverse/core.py, entities/drift_resonance.py
+PURPOSE: Track and manage realities: add/get/list/remove with stability fields.
+MATHEMATICAL CORE: Stores per-reality fitness F_reality, coherence, complexity, novelty.
+INTEGRATION POINTS: multiverse.core, entities.*, civilizations.*, cognition.*, expansion.*, mathematics.multiversal_metrics
 """
 from __future__ import annotations
 from dataclasses import dataclass, field
-from typing import Dict, Iterator, Any, List
-import itertools, numpy as np
-
-from ..mathematics.quantum_consciousness import ConsciousField
-
-_uid_counter = itertools.count(1)
+from typing import Dict, Any, Optional
+import numpy as np
 
 @dataclass
 class Reality:
-    uid: int
-    narrative_params: np.ndarray
-    physical_state: np.ndarray
-    conscious_field: ConsciousField
-    civilization: Dict[str, Any]
-    fitness: float = 0.0
-    log: List[Dict[str, Any]] = field(default_factory=list)
+    rid: str
+    physical_constants: Dict[str, float]
+    narrative_seed: Dict[str, Any]
+    consciousness_template: Dict[str, Any]
+    state: Dict[str, Any] = field(default_factory=dict)
+    metrics: Dict[str, float] = field(default_factory=lambda: dict(
+        fitness=0.0, complexity=0.0, stability=1.0, novelty=0.0, coherence=0.0
+    ))
 
 class RealityRegistry:
     def __init__(self):
-        self._realities: Dict[int, Reality] = {}
+        self._realities: Dict[str, Reality] = {}
 
-    def create_reality(self, narrative_params, physical_state, conscious_field, civ) -> Reality:
-        uid = next(_uid_counter)
-        R = Reality(uid, np.array(narrative_params, float), np.array(physical_state, float), conscious_field, civ)
-        self._realities[uid] = R
-        return R
+    def add(self, r: Reality) -> None:
+        if r.rid in self._realities:
+            raise ValueError(f"Reality '{r.rid}' already exists.")
+        self._realities[r.rid] = r
 
-    def get(self, uid: int) -> Reality:
-        return self._realities[uid]
+    def get(self, rid: str) -> Optional[Reality]:
+        return self._realities.get(rid)
 
-    def __iter__(self) -> Iterator[Reality]:
-        return iter(self._realities.values())
+    def remove(self, rid: str) -> None:
+        self._realities.pop(rid, None)
 
-    def as_matrix(self) -> np.ndarray:
-        """Simple matrix of pairwise overlaps of narrative params."""
-        keys = list(self._realities.keys())
-        if not keys:
-            return np.zeros((0,0))
-        P = np.stack([self._realities[k].narrative_params for k in keys], axis=0)
-        Pn = P / (np.linalg.norm(P, axis=1, keepdims=True) + 1e-12)
-        return Pn @ Pn.T
+    def list_ids(self):
+        return list(self._realities.keys())
 
-    def physical_state_from_constants(self, consts: Dict[str, float]) -> np.ndarray:
-        v = np.array([float(consts.get(k,0.0)) for k in sorted(consts.keys())], float)
-        if v.size == 0: v = np.array([1.0], float)
-        return v
+    def snapshot(self):
+        return {k: v.metrics for k, v in self._realities.items()}
 
-    def log_event(self, uid: int, event: Dict[str, Any]) -> None:
-        self._realities[uid].log.append(event)
-
-    def serialize(self) -> Dict[str, Any]:
-        out = {}
-        for uid, R in self._realities.items():
-            out[uid] = {
-                "narrative_params": R.narrative_params.tolist(),
-                "physical_state": R.physical_state.tolist(),
-                "conscious_field": R.conscious_field.to_dict(),
-                "civilization": R.civilization,
-                "fitness": R.fitness,
-                "log": R.log[-16:],
-            }
-        return out
+if __name__ == "__main__":
+    rr = RealityRegistry()
+    rr.add(Reality("R1", {"c":1.0}, {"archetype":"seed"}, {"psi0":0.1}))
+    print("Realities:", rr.list_ids())
+    print("Snapshot:", rr.snapshot())

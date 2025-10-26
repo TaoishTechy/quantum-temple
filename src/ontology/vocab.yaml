@@ -1,0 +1,16 @@
+concepts:
+  agent:        {label: "Agent",        role: Agent}
+  intention:    {label: "Intention",    role: Intention}
+  constraint:   {label: "Constraint",   role: Constraint}
+  safety:       {label: "Safety",       role: Value}
+  compassion:   {label: "Compassion",   role: Value}
+  evidence:     {label: "Evidence",     role: Evidence}
+  context:      {label: "Context",      role: Context}
+  operator:     {label: "Operator",     role: Operator}
+  process:      {label: "Process",      role: Process}
+predicates:
+  - supports
+  - violates
+  - fulfills
+  - targets
+

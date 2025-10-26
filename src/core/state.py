@@ -1,6 +1,5 @@
 from dataclasses import dataclass, field
 from collections import deque
-import numpy as np
 
 @dataclass
 class QuditNode:

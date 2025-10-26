@@ -1,47 +1,68 @@
 """
 FILE: quantum_temple_multiverse/entities/drift_resonance.py
-PURPOSE: Drift-Being Resonance Kernel; coherence across reality layers
+PURPOSE: Maintain entity coherence across realities; compute anchors.
 MATHEMATICAL CORE:
-  ∂|Ψ_drift⟩/∂t = -i[H_drift, |Ψ_drift⟩] - Γ |Ψ_drift⟩
-  A_anchor = ∫ ⟨Ψ|R_reality|Ψ⟩ dμ  (approximated as cosine similarity of narrative params × conscious coherence)
-INTEGRATION POINTS: multiverse/core.py, mathematics/quantum_consciousness.py
+  Drift Resonance: ∂|Ψ_drift⟩/∂t = -i H |Ψ_drift⟩ - Γ |Ψ_drift⟩  (Euler step)
+  Anchor: A_anchor = ∫ ⟨Ψ| R_reality |Ψ⟩ dμ  (discrete sum on grid)
+INTEGRATION POINTS: multiverse.core, cognition.entropic_simulator, expansion.vel_vohr
 """
 from __future__ import annotations
+from dataclasses import dataclass
 import numpy as np
-from ..multiverse.reality_registry import Reality
 
+@dataclass
 class DriftResonanceKernel:
-    def __init__(self, gamma: float = 0.02):
-        self.gamma = float(gamma)
+    gamma: float = 0.01  # dissipation
+    dt: float = 0.05
 
-    def stabilize_entity(self, entity_state: np.ndarray, target_realities: np.ndarray) -> np.ndarray:
+    def step(self, psi: np.ndarray, H: np.ndarray) -> np.ndarray:
+        """Euler step for drift resonance evolution."""
+        if H.shape[0] != psi.size:
+            raise ValueError("H size mismatch.")
+        dpsi = -1j * (H @ psi) - self.gamma * psi
+        psi_next = psi + self.dt * dpsi
+        nrm = np.linalg.norm(psi_next)
+        if nrm > 1e-12:
+            psi_next = psi_next / nrm
+        return psi_next
+
+    def stabilize_entity(self, entity_state: np.ndarray, target_realities: int) -> float:
         """
-        entity_state: complex vector |Ψ⟩ (N,)
-        target_realities: overlap matrix (N,N)
-        Evolves one Euler step with dissipative term.
+        Return a coherence score after 'target_realities' stabilization passes.
+        Here: average PLV-like coherence over small ensemble simulations.
         """
-        N = entity_state.size
-        H = 0.5 * (target_realities + target_realities.T)  # Hermitian surrogate
-        dpsi = -1j * (H @ entity_state) - self.gamma * entity_state
-        return self._normalize(entity_state + 0.05 * dpsi)
+        psi = entity_state.copy()
+        D = psi.size
+        H = self._toy_hamiltonian(D)
+        coh = []
+        for _ in range(max(1, target_realities)):
+            psi = self.step(psi, H)
+            ang = np.angle(psi + 1e-12)
+            coh.append(np.abs(np.mean(np.exp(1j * ang))))
+        return float(np.mean(coh))
 
-    def calculate_reality_anchor(self, reality: Reality, reality_matrix: np.ndarray) -> float:
-        """Cosine similarity to the registry mean × conscious coherence scalar."""
-        if reality_matrix.size == 0:
-            return 0.0
-        idx = reality.uid - 1
-        sim = float(np.clip(reality_matrix[idx].mean(), -1.0, 1.0))
-        return max(0.0, sim) * float(reality.conscious_field.coherence())
-
-    def evolve_reality(self, R: Reality, dt: float) -> None:
-        """Simple dissipative drift on narrative params proportional to null energy."""
-        p = R.narrative_params
-        mean = np.tanh(p.mean())
-        R.narrative_params = p + dt * (-0.1 * (p - mean))
-        # conscious diffusion (small)
-        R.conscious_field.diffuse(dt, kappa=0.03)
+    def calculate_reality_anchor(self, psi: np.ndarray, R: np.ndarray) -> float:
+        """
+        A_anchor = ⟨Ψ| R |Ψ⟩ (discrete expectation value)
+        """
+        if R.shape != (psi.size, psi.size):
+            raise ValueError("R dimension mismatch.")
+        return float(np.real(np.vdot(psi, R @ psi)))
 
     @staticmethod
-    def _normalize(v: np.ndarray) -> np.ndarray:
-        n = np.linalg.norm(v)
-        return v if n < 1e-12 else v / n
+    def _toy_hamiltonian(D:int) -> np.ndarray:
+        # Hermitian circulant-like matrix
+        H = np.zeros((D, D), dtype=complex)
+        for i in range(D):
+            H[i, i] = 1.0
+            H[i, (i+1)%D] = -0.5
+            H[(i+1)%D, i] = -0.5
+        return H
+
+if __name__ == "__main__":
+    ker = DriftResonanceKernel()
+    psi0 = np.ones(8, dtype=complex); psi0 /= np.linalg.norm(psi0)
+    R = np.eye(8)
+    c = ker.stabilize_entity(psi0, 5)
+    a = ker.calculate_reality_anchor(psi0, R)
+    print("coherence≈", round(c,4), "anchor≈", round(a,4))

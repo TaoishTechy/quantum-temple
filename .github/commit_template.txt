@@ -1,0 +1,6 @@
+<type>(scope): <short summary>
+
+<body: explain rationale, tradeoffs, and impact>
+
+Refs: #<id>
+BREAKING CHANGE: <optional details>

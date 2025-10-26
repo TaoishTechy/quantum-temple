@@ -1,41 +1,11 @@
 quantum-temple/
-├── README.md
-├── LICENSE
 ├── src/
-│   ├── core/
-│   │   ├── resonance_operator.py
-│   │   ├── zeta_operator.py     # from AxiomForge symbolic oracle lineage
-│   │   ├── phase_lock_step.py   # phase synchronization across mesh
-│   │   └── ghost_mesh.py        # derived from PazuzuCore agent topology
-│   ├── agents/
-│   │   ├── recursive_agent.py   # recursive self-mod evaluator (Pazuzu logic)
-│   │   └── symbolic_knowledge.py
-│   └── utils/
-│       ├── metrics_logger.py
-│       └── network_monitor.py
-├── orchestrator/
-│   ├── run_blitz_test.sh
-│   ├── collect_results.sh
-│   ├── teardown.sh
-│   └── config.yaml
-├── infrastructure/
-│   ├── deploy_quantum_temple.sh
-│   ├── cloud-init.yaml
-│   ├── inventory.yml
-│   └── deploy_stack.yml
-├── docker/
-│   ├── core.Dockerfile
-│   ├── sync.Dockerfile
-│   ├── metrics.Dockerfile
-│   └── docker-compose.yml
-├── tests/
-│   ├── test_phase_lock.py
-│   ├── test_oracle_performance.py
-│   ├── test_recursive_coherence.py
-│   └── test_fractal_scaling.py
-├── metrics/
-│   ├── prometheus.yml
-│   └── grafana_dashboard.json
-└── data/
-    ├── output_logs/
-    └── resonance_traces/
+│   ├── core/              # Resonance and phase logic
+│   ├── agents/            # Recursive cognitive agents
+│   └── utils/             # Metrics + monitoring
+├── orchestrator/          # Blitz protocol scripts
+├── infrastructure/        # Hetzner + Ansible deploy
+├── docker/                # Container stack
+├── tests/                 # Validation suite
+├── metrics/               # Prometheus + Grafana
+└── data/                  # Logs + resonance traces

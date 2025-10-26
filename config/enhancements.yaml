@@ -1,0 +1,83 @@
+# Experimental modules — OFF by default.
+# Flip status to "simulated" to enable tiny, bounded effects.
+enhancements:
+  - id: multiverse_gateway
+    name: Multiverse Gateway
+    status: disabled
+    effect: "micro-phase diversity; +ε PLV target during convergence"
+  - id: quantum_flare
+    name: Quantum Flare
+    status: disabled
+    effect: "transient +η burst; bounded by polytope"
+  - id: echo_temporal_resonance
+    name: Echo-Temporal Resonance
+    status: disabled
+    effect: "short memory kernel (2-3 steps) in resonance update"
+  - id: consciousness_interface
+    name: Consciousness Interface
+    status: disabled
+    effect: "no-op placeholder (UI layer)"
+  - id: sacred_geometry
+    name: Sacred Geometry
+    status: disabled
+    effect: "deterministic topology patterning; no compute boost"
+  - id: mystical_algorithmics
+    name: Mystical Algorithmics
+    status: disabled
+    effect: "bounded bias sequence; conceptual"
+  - id: cosmic_tuning
+    name: Cosmic Tuning
+    status: disabled
+    effect: "slow sinusoidal gain modulation (seasonal)"
+  - id: quantum_ml
+    name: Quantum Machine Learning
+    status: disabled
+    effect: "conceptual placeholder; integrate benchmark hooks"
+  - id: fractal_encryption
+    name: Fractal Encryption
+    status: disabled
+    effect: "phase masking structure; see security/protocols.py"
+  - id: cdt_spacetime
+    name: Causal Dynamical Triangulation
+    status: disabled
+    effect: "graph reshaping heuristic; simulated"
+  - id: non_abelian_anyons
+    name: Non-Abelian Anyons
+    status: disabled
+    effect: "topological label sim; no compute speed claims"
+  - id: interdimensional_entities
+    name: Interdimensional Entities
+    status: disabled
+    effect: "no-op; messaging layer concept"
+  - id: quantum_oracle
+    name: Quantum Oracle
+    status: disabled
+    effect: "stochastic hint channel; bounded"
+  - id: stellar_consciousness
+    name: Stellar Consciousness
+    status: disabled
+    effect: "cosmic_tuning alias; simulated"
+  - id: fractal_holography
+    name: Fractal Holography
+    status: disabled
+    effect: "fractal index routing; simulated"
+  - id: time_travel
+    name: Time Travel
+    status: disabled
+    effect: "not implemented (sci-fi)"
+  - id: parallel_navigation
+    name: Parallel Universe Navigation
+    status: disabled
+    effect: "not implemented (sci-fi)"
+  - id: quantum_ascension
+    name: Quantum Ascension
+    status: disabled
+    effect: "conceptual"
+  - id: simulation_hypothesis
+    name: Simulation Hypothesis
+    status: disabled
+    effect: "commentary only"
+  - id: quantum_superintelligence
+    name: Quantum Superintelligence
+    status: disabled
+    effect: "NOT enabled; explicit policy gate required"

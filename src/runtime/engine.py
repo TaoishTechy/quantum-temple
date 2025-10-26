@@ -2,22 +2,21 @@
 # ──────────────────────────────────────────────────────────────────────────────
 # Quantum Temple — TempleEngine Runtime
 #
-# Orchestrates one simulation step by:
-#   1) reading phases and early-warning stats
-#   2) updating σ(Q) via PID control (safety-aware observation charge)
-#   3) applying the unified critical operator H_crit (stab + obs + retro)
-#   4) enforcing Π-lock parity flip budget
-#   5) updating coherence history, norms, and semantic metrics
-#   6) appending an auditable governance entry to the holographic ledger
+# Responsibilities per step():
+#   1) Read phases & early-warning stats
+#   2) Update σ(Q) via PID (safety-aware observation charge)
+#   3) Apply H_crit (stab + obs + retro)
+#   4) Enforce Π-lock parity policy (+ archetype gating)
+#   5) Evaluate norms (Supra-Ontological), export metrics
+#   6) Append auditable snapshot to the holographic ledger
 #
-# Optional: can be extended with AxiomForge operators via the integrations bridge.
+# Optional: Archetype hooks (config/archetypes.yaml)
 # ──────────────────────────────────────────────────────────────────────────────
 
 from __future__ import annotations
-from ..agents.archetypes import ArchetypeRegistry
-from ..agents.runtime_hooks import ArchetypeHooks
+
 from dataclasses import dataclass
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 
 import numpy as np
 
@@ -30,21 +29,31 @@ from ..core.ledger import Ledger
 # Supra-Ontological: runtime norms & semantic metrics
 from ..ontology.ethics import Norms
 # Prometheus bridge for semantic gauges (alignment / violations / role coherence)
-# Ensure you have src/metrics/prometheus_bridge.py with set_* functions.
 from ..metrics import prometheus_bridge as sem
+
+# Archetype mapping (optional; file may not exist on first run)
+try:
+    from ..agents.archetypes import ArchetypeRegistry
+    from ..agents.runtime_hooks import ArchetypeHooks
+    _ARCHETYPES_AVAILABLE = True
+except Exception:
+    _ARCHETYPES_AVAILABLE = False
 
 
 @dataclass
 class EngineConfig:
     """Lightweight config for the runtime engine."""
     dt: float = 1e-3
+
     # PID target for variance of phase series
     target_variance: float = 0.05
     # initial σ(Q) for the observation charge controller
     sigma_q_initial: float = 0.09
-    # soft retro-lambda anchor parameters (currently used for scheduling hooks)
+
+    # soft retro-λ anchor parameters (currently informative)
     anchor_alpha: float = 0.12
     anchor_ci_target: float = 0.98
+
     # H_crit parameters
     tau_delay_steps: int = 16
     hcrit_g: float = 1.0
@@ -54,18 +63,15 @@ class EngineConfig:
     min_coherence: float = 0.20
     max_parity_flips: int = 2
 
-    # Ledger path is determined inside Ledger; override by editing ledger config.
-
 
 class TempleEngine:
     """
     The core runtime loop for Quantum Temple.
 
-    Typical usage:
+    Example:
         state = ResonanceState(nodes=[QuditNode() for _ in range(N)], dt=cfg.dt)
         engine = TempleEngine(state, cfg=EngineConfig())
-        for _ in range(steps):
-            engine.step()
+        engine.run(steps=10000)
     """
 
     def __init__(
@@ -96,12 +102,24 @@ class TempleEngine:
             ci_target=self.cfg.anchor_ci_target, alpha=self.cfg.anchor_alpha
         )
 
+        # Norms (Supra-Ontological)
         self.norms = norms or Norms(
             variance_cap=self.cfg.variance_cap,
             min_coherence=self.cfg.min_coherence,
             max_parity_flips=self.cfg.max_parity_flips,
         )
+
         self.ledger = ledger or Ledger()
+
+        # Archetypes (optional)
+        self.archetypes: Optional[ArchetypeHooks] = None
+        if _ARCHETYPES_AVAILABLE:
+            try:
+                reg = ArchetypeRegistry()
+                reg.load_yaml("config/archetypes.yaml")
+                self.archetypes = ArchetypeHooks(registry=reg)
+            except FileNotFoundError:
+                self.archetypes = None
 
         # book-keeping
         self._step_count = 0
@@ -113,7 +131,7 @@ class TempleEngine:
     # Helpers
     # ────────────────────────────────────────────────────────────────────────
 
-    def _compute_phases(self) -> np.ndarray:
+    def _phases(self) -> np.ndarray:
         return np.array([n.phase for n in self.state.nodes], dtype=float)
 
     # ────────────────────────────────────────────────────────────────────────
@@ -126,11 +144,15 @@ class TempleEngine:
           - read phases, compute EW stats
           - update sigma_Q with PID
           - push delayed Ψ; apply H_crit
-          - attempt parity flip if inside bounds (Π-Lock)
+          - attempt parity flip (Π-Lock) with archetype veto
           - evaluate norms; export semantic metrics
           - ledger an auditable snapshot
         """
-        phases_now = self._compute_phases()
+        phases_now = self._phases()
+
+        # Archetypes may tune PID target_variance before control update
+        if self.archetypes:
+            self.archetypes.on_step_pre(self.state, self)
 
         # Early warning metrics from current phase series
         ew = early_warnings(phases_now)  # {"variance": var, "lag1": ac1}
@@ -153,15 +175,20 @@ class TempleEngine:
         )
 
         # Post-operator phases/coherence
-        phases_new = self._compute_phases()
+        phases_new = self._phases()
         coherence = phase_lock_value(phases_new)
         self._last_coherence = coherence
 
         # Π-Lock — bounded parity flips when coherence lies in gate window
         flipped = self.pilock.try_flip(coherence=coherence)
-        if flipped:
-            # Inform norms module that a flip occurred
-            self.norms.on_parity_flip()
+
+        # Archetype gate: disallow flip if any bound archetype exceeded budget
+        if flipped and self.archetypes:
+            # For now, we assume a global flip event over all nodes
+            allowed = self.archetypes.on_parity_flip(list(range(len(self.state.nodes))), self)
+            if not allowed:
+                self.pilock.count = max(0, self.pilock.count - 1)  # undo increment
+                flipped = False
 
         # Advance time & append history
         self.state.t += self.state.dt
@@ -173,7 +200,6 @@ class TempleEngine:
         self._last_verdict = verdict
 
         # Semantic metrics (export to Prometheus bridge)
-        # Alignment proxy: 1 - 0.34 * (#violations), clamped to [0,1]
         alignment = max(0.0, min(1.0, 1.0 - 0.34 * float(verdict.get("violations", 0))))
         sem.set_alignment(alignment)
         sem.set_violations(float(verdict.get("violations", 0)))
@@ -194,7 +220,6 @@ class TempleEngine:
                 "norms_ok": bool(verdict.get("ok", True)),
                 "norms_violations": int(verdict.get("violations", 0)),
                 "norms_notes": str(verdict.get("notes", "")),
-                # room for future: AxiomForge op names, ontology bindings, etc.
             },
         )
 

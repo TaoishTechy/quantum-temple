@@ -1,0 +1,8 @@
+# Load archetypes (optional; ignore if file missing)
+self.archetypes = None
+try:
+    reg = ArchetypeRegistry()
+    reg.load_yaml("config/archetypes.yaml")
+    self.archetypes = ArchetypeHooks(registry=reg)
+except FileNotFoundError:
+    self.archetypes = None

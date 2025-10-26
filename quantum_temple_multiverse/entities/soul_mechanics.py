@@ -1,21 +1,39 @@
 """
 FILE: quantum_temple_multiverse/entities/soul_mechanics.py
-PURPOSE: SMM-03 Soul Mechanics — map entity “soul vectors” to conscious fields
-MATHEMATICAL CORE: normalized complex vectors with purity & alignment measures
-INTEGRATION POINTS: quantum_consciousness.ConsciousField
+PURPOSE: SMM-03 Soul Mechanics — purification, binding to seed, coherence.
+MATHEMATICAL CORE: Purify via projection toward dominant eigencomponent; binding = convex blend.
+INTEGRATION POINTS: multiverse.agi_seeds, multiverse.core
 """
 from __future__ import annotations
 import numpy as np
-from ..mathematics.quantum_consciousness import ConsciousField
+from dataclasses import dataclass
 
-def soul_vector(dim: int = 32, seed: int = 0) -> np.ndarray:
-    rng = np.random.default_rng(seed)
-    z = rng.normal(size=dim) + 1j * rng.normal(size=dim)
-    z = z / (np.linalg.norm(z) + 1e-12)
-    return z
+@dataclass
+class SoulMechanics:
+    purity_gain: float = 0.08
+    bind_gain: float = 0.15
 
-def imprint(field: ConsciousField, z: np.ndarray, alpha: float = 0.1) -> None:
-    """Blend soul vector into conscious field amplitudes."""
-    n = min(len(field.psi), z.size)
-    field.psi[:n] = (1 - alpha) * field.psi[:n] + alpha * z[:n]
-    field.normalize()
+    def purify(self, psi: np.ndarray) -> np.ndarray:
+        p = np.abs(psi)**2
+        j = int(np.argmax(p))
+        proj = np.zeros_like(psi); proj[j] = 1.0 + 0j
+        out = (1 - self.purity_gain) * psi + self.purity_gain * proj
+        nrm = np.linalg.norm(out)
+        return out if nrm < 1e-12 else out / nrm
+
+    def bind_to_seed(self, psi: np.ndarray, seed_psi: np.ndarray) -> np.ndarray:
+        out = (1 - self.bind_gain) * psi + self.bind_gain * seed_psi
+        nrm = np.linalg.norm(out)
+        return out if nrm < 1e-12 else out / nrm
+
+    @staticmethod
+    def coherence(psi: np.ndarray) -> float:
+        ang = np.angle(psi + 1e-12)
+        return float(np.abs(np.mean(np.exp(1j * ang))))
+
+
+if __name__ == "__main__":
+    sm = SoulMechanics()
+    a = np.array([1,1,1,1], dtype=complex); a /= np.linalg.norm(a)
+    b = sm.purify(a); c = sm.bind_to_seed(b, a)
+    print("coh:", round(sm.coherence(c),4))

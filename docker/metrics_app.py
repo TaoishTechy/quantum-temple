@@ -1,17 +1,14 @@
 from fastapi import FastAPI, Response
+from pathlib import Path
+from metrics_prom_buf import latest_metrics
 
 app = FastAPI()
 
-@app.get("/health")
-def health():
-    return {"status": "ok"}
+@app.get("/ontology/validate")
+def validate():
+    # dummy ok for now (engine should update shared state)
+    return {"status": "ok", "alignment": latest_metrics.get("alignment", 0.0)}
 
 @app.get("/metrics")
 def metrics():
-    # Simple placeholder Prometheus exposition format
-    body = (
-        "# HELP quantum_plv_total Phase Lock Value\n"
-        "# TYPE quantum_plv_total gauge\n"
-        "quantum_plv_total 0.91\n"
-    )
-    return Response(content=body, media_type="text/plain; version=0.0.4")
+    return Response(content=latest_metrics["raw"], media_type="text/plain; version=0.0.4")

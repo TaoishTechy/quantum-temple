@@ -1,0 +1,14 @@
+route:
+  receiver: default
+  group_by: ['alertname']
+  group_wait: 10s
+  group_interval: 2m
+  repeat_interval: 1h
+
+receivers:
+  - name: default
+    # Example: send to Slack webhook (set via env/secrets in deployment)
+    slack_configs:
+      - api_url: ${SLACK_WEBHOOK_URL}
+        channel: '#quantum-temple-alerts'
+        send_resolved: true

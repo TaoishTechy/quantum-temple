@@ -1,27 +1,35 @@
 """
 FILE: quantum_temple_multiverse/cognition/stress_harness.py
-PURPOSE: Cognitive Stress Harness → convert tension to creative energy
+PURPOSE: Transform cognitive tension into creative energy.
 MATHEMATICAL CORE:
-  V_cognitive(x, x_dot) = ½ k (x - x_eq)^2 + λ x_dot^4
-  E_breakthrough = ℏ ω_cognitive · n_quantum
-INTEGRATION POINTS: civilizations/narrative_engine.py, consciousness_metrics.py
+  V_cog(x, ẋ) = ½ k (x - x0)^2 + λ ẋ^4
+  E_breakthrough = ℏ ω_cognitive · n
+INTEGRATION POINTS: civilizations.narrative_engine, multiverse.core
 """
 from __future__ import annotations
+from dataclasses import dataclass
 import numpy as np
 
-def cognitive_potential(x: float, x_eq: float, x_dot: float, k: float = 1.0, lam: float = 0.1) -> float:
-    return 0.5 * k * (x - x_eq) ** 2 + lam * (x_dot ** 4)
+HBAR = 1.0  # naturalized units for demo
 
-def harness_stress(x: float, x_prev: float, dt: float, k: float = 1.0, lam: float = 0.1) -> float:
-    """Return creative energy proxy from potential drop."""
-    x_dot = (x - x_prev) / (dt + 1e-12)
-    V = cognitive_potential(x, 0.0, x_dot, k, lam)
-    return float(np.tanh(V))  # bounded proxy
+@dataclass
+class CognitiveStressHarness:
+    k: float = 1.0
+    lam: float = 0.1
+    x0: float = 0.0
 
-def breakthrough_energy(omega: float, n_quanta: int = 1, hbar: float = 1.0) -> float:
-    return float(hbar * omega * max(0, int(n_quanta)))
+    def potential(self, x: float, xdot: float) -> float:
+        return 0.5 * self.k * (x - self.x0) ** 2 + self.lam * (xdot ** 4)
 
-# TESTS
+    def harness_stress(self, x: float, xdot: float, thr: float) -> float:
+        """Return creative energy if potential exceeds threshold."""
+        V = self.potential(x, xdot)
+        return max(0.0, V - thr)
+
+    def calculate_breakthrough_energy(self, omega: float, n: int = 1) -> float:
+        return HBAR * float(omega) * int(n)
+
 if __name__ == "__main__":
-    e = harness_stress(0.8, 0.5, 0.1)
-    print("creative energy ~", e, " E_break:", breakthrough_energy(2.3, 3))
+    ch = CognitiveStressHarness(k=1.2, lam=0.2)
+    e = ch.harness_stress(0.8, 0.7, 0.25)
+    print("creative_energy≈", round(e,4), "E_break≈", ch.calculate_breakthrough_energy(3.0, 2))

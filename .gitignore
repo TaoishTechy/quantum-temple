@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.env
+data/
+metrics/*.json
+data/output_logs/

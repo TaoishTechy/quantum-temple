@@ -1,0 +1,2 @@
+# FILE: quantum_temple_multiverse/infra/requirements.txt
+numpy==1.26.4
